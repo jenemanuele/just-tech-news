@@ -3,38 +3,16 @@ const { User, Post, Vote } = require('../../models');
 
 // get all users
 router.get('/', (req, res) => {
-  Post.findAll({
-    attributes: [
-      'id',
-      'post_url',
-      'title',
-      'created_at',
-      [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
-    ],
-    include: [
-      {
-        model: Comment,
-        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
-        include: {
-          model: User,
-          attributes: ['username']
-        }
-      },
-      {
-        model: User,
-        attributes: ['username']
-      }
-    ]
+  User.findAll({
+    // attributes: { exclude: ['password'] }
   })
-    .then(dbPostData => {
-      // pass a single post object into the homepage template
-      res.render('homepage', dbPostData[0]);
-    })
+    .then(dbUserData => res.json(dbUserData))
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
     });
 });
+
 router.get('/:id', (req, res) => {
   User.findOne({
     attributes: { exclude: ['password'] },
