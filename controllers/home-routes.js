@@ -31,11 +31,14 @@ router.get('/', (req, res) => {
     .then(dbPostData => {
       const posts = dbPostData.map(post => post.get({ plain: true }));
 
-      res.render('homepage', { posts });
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json(err);
+      res.render('homepage', {
+        posts,
+        loggedIn: req.session.loggedIn
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).json(err);
     });
 });
 
@@ -76,12 +79,23 @@ router.get('/post/:id', (req, res) => {
       const post = dbPostData.get({ plain: true });
 
       // pass data to template
-      res.render('single-post', { post });
+      res.render('single-post', { 
+        post,
+        loggedIn: req.session.loggedIn
+      });
     })
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
     });
+});
+router.get('/login', (req, res) => {
+  if (req.session.logged) {
+    res.redirect('/');
+    return;
+  }
+
+  res.render('login');
 });
 
 module.exports = router;
